@@ -2,7 +2,7 @@ import serial
 import threading
 
 PORT = '/dev/serial0'   # Use UART pins (GPIO14 TX, GPIO15 RX)
-BAUD = 115200
+BAUD = 57600
 
 def read_from_pc(ser):
     """Continuously read and display incoming commands."""
