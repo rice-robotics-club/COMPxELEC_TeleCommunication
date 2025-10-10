@@ -1,0 +1,49 @@
+import serial
+import time
+from pynput import keyboard
+import threading
+
+# --- Config ---
+PORT = "COM8"
+BAUD = 57600
+INACTIVITY_RESET = 0.5  # Reset message to "0" if no key press for X seconds
+
+# --- Globals ---
+message = "0"
+last_keypress_time = time.time()
+
+# --- Keyboard listener callback ---
+def on_press(key):
+    global message, last_keypress_time
+    try:
+        if key.char == 'w':
+            message = "sigmaballs"
+            print(f"'w' pressed. message = {message}")
+            last_keypress_time = time.time()
+    except AttributeError:
+        pass  # Ignore special keys
+
+# --- Message sending loop ---
+def send_loop():
+    global message
+    try:
+        with serial.Serial(PORT, BAUD, timeout=1) as ser:
+            print(f"Opened serial port {PORT} at {BAUD} baud.")
+            while True:
+                # Reset message to "0" if timeout passed
+                if time.time() - last_keypress_time > INACTIVITY_RESET:
+                    message = "0"
+
+                ser.write((message + "\n").encode())
+                print("Sent:", message)
+                time.sleep(0.5)
+    except Exception as e:
+        print("Serial error:", e)
+
+# --- Start serial send loop in a separate thread ---
+sender_thread = threading.Thread(target=send_loop, daemon=True)
+sender_thread.start()
+
+# --- Start keyboard listener (blocks main thread) ---
+with keyboard.Listener(on_press=on_press) as listener:
+    listener.join()

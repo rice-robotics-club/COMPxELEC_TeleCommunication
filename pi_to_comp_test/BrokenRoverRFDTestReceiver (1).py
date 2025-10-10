@@ -1,6 +1,6 @@
 import serial
 
-PORT = "COM5"
+PORT = "COM8"
 BAUD = 57600
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
