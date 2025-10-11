@@ -6,7 +6,7 @@ import threading
 # --- Config ---
 PORT = "COM8"
 BAUD = 57600
-INACTIVITY_RESET = 0.5  # Reset message to "0" if no key press for X seconds
+INACTIVITY_RESET = 0.2  # Reset message to "0" if no key press for X seconds
 
 # --- Globals ---
 # these variables have to be globals so that both threads can access them!
