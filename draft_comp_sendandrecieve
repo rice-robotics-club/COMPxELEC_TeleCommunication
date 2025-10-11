@@ -9,39 +9,53 @@ PORT = "COM8"
 BAUD = 57600
 INACTIVITY_RESET = 0.5  # Reset message to "0" if no key press for X seconds
 
-# because we're accessing serial from multiple threads,
-# this should keep it from having issues with multiple
-# things trying to read from/write to serial at once.
-# by saying "with serial_lock:" before doing any
-# lines that involve serial reading or writing,
-# it forces part of prograrm to wait until serial is
-# not being used to read/write
-serial_lock = threading.Lock()
+# ABOUT LOCKS: these can be used in one thread to make other threads wait before
+# reading/writing to serial/console/global variable, which is very important.   
+# Using these is not necessary for the current program iteration, but still use them because they
+# can prevent errors if multiple threads are trying to do the same thing in parallel.
 
-# this queue holds messages for computer to send/print/etc when it
-# gets the chance
+# use whenever sending info on serial:
+send_lock = threading.Lock()
+
+#use whenever printing info to console:
+print_lock = threading.Lock()
+
+#use whenever reading info from serial:
+read_lock = threading.Lock()
+
+# Please just add any printing and sending messages to the respective queues so that 
+# the printing and sending threads take care of them and these locks remain unnecessary!
+
+# In the future, if multiple threads need to read info in parallel,
+# we should just create a function that reads messages and stores them to queues or
+# global variables for use elsewhere.  This is not currently set up
+
+# these queues hold messages for computer to send/print/etc when it gets the chance
 send_queue = queue.Queue
 print_queue = queue.Queue
 
-ser = serial.Serial(PORT, BAUD, timeout=1)
-print(f"Listening on {PORT}")
-
 # --- Globals ---
-# these variables have to be globals so that both threads can access them!
-last_keypress_time = time.time()
+# these variables have to be globals so that both threads can access them
+last = "placeholder" #ok so maybe this one doesn't have to be global but it doesn't hurt
+ser = serial.Serial(PORT, BAUD, timeout=1)
+print(f"Connected to {PORT} at {BAUD}")
 
 # --- Keyboard listener callback ---
 # these are the instructions that the keyboard listener
-# loop (at the last two lines of this code) will execute whenever
-# a key is pressed
+# loop (at the last two lines of this code) will execute whenever a key is pressed
 def on_press(key):
-    global last_keypress_time
+    global last
     try:
-        if key.char == 'w':
+        if key.char == 'w' and last != "w":
             msg = "sigmaballs"
             send_queue.put("sigmaballs")
             print_queue.put(f"'w' pressed. message = {msg}")
-            last_keypress_time = time.time()
+            last = "w"
+        elif key.char == "e" and last != "e":
+            msg = "no sigma balls"
+            send_queue.put("sigmaballs")
+            print_queue.put(f"'w' pressed. message = {msg}")
+            last = "e"
     except AttributeError:
         pass  # Ignore special keys
 
@@ -49,7 +63,7 @@ def on_press(key):
 # this code is executed on loop in reciever thread
 def recieve_loop():
     #read serial and put it in print queue
-    with serial_lock:
+    with read_lock:
         if ser.in_waiting > 0:
             try:
                 line = ser.readline().decode(errors='ignore').strip()
@@ -61,31 +75,21 @@ def recieve_loop():
 # --- Message sending loop ---
 # this code is executed on loop in sender thread
 def send_loop():
-    message = send_queue.get()  # gets messages which was stored by key press
-                             #in the order that they werer stored
-
-    #reset message if timeout passed
-    if time.time() - last_keypress_time > INACTIVITY_RESET:
-        message = "no sigma balls"
-
-    #send message
-    with serial_lock:
-        try:
-            with serial.Serial(PORT, BAUD, timeout=1) as ser:
-                #print_queue.put(f"Opened serial port {PORT} at {BAUD} baud.")
+        message = send_queue.get()  # gets messages which was stored by key press
+                            #in the order that they werer stored
+        #send message
+        with send_lock:
+            try:
                 ser.write((message + "\n").encode())
-        except Exception as e:
-            print_queue.put("Serial error:", e)
-
-    print_queue.put("Sent:", message)
+                print_queue.put("Sent:", message)
+            except Exception as e:
+                print_queue.put("Serial error:", e)
 
 # --- printing to serial loop ---
-# this code is executed on loop printing thread
+# this code is executed on loop in printing thread
 def print_loop():
-    #can have it print multiple things within one serial lock if message
-    #queue gets way backed up
-    printThis = print_queue.get()
-    with serial_lock:
+    with print_lock:
+        printThis = print_queue.get()
         print(printThis)
 
 
@@ -95,9 +99,16 @@ sender_thread = threading.Thread(target=send_loop, daemon=True)
 sender_thread.start()
 
 # --- Start serial reciever loop in yet another thread ---
-# Having two threads that use serial hopefully won't cause problems because we used queueing and locking
+# Having two threads that use serial hopefully won't cause problems because
+# one solely reads serial and one solely writes serial.  If problems arise,
+# use queueing and locking
 reciever_thread = threading.Thread(target=recieve_loop, daemon=True)
 reciever_thread.start()
+
+# --start console print loop in a separate thread from main
+# this print loop and queue is to make sure that only one thing prints at a time!
+print_thread = threading.Thread(target = print_loop, daemon=True)
+print_thread.start()
 
 # --- Start keyboard listener (blocks main thread) ---
 # this code is an infinite loop, so it is located at the end of the main thread and other lines lines in the main thread from being reached
