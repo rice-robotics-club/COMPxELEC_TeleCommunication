@@ -56,4 +56,4 @@ while True:
     print("Sent:", inputs)
 
     # Small delay to avoid spamming
-    time.sleep(0.1) # This value can be changed
+    time.sleep(0.1) # This value can be changed 
