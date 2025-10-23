@@ -28,9 +28,13 @@ while True:
 
     # Read analog sticks
     left_x = joystick.get_axis(0)
-    left_y = joystick.get_axis(1)
+    left_y = -1*joystick.get_axis(1) # This inverts the values so the top is positive and bottom is negative
     right_x = joystick.get_axis(2)
-    right_y = joystick.get_axis(3)
+    right_y = -1*joystick.get_axis(3) # Same thing
+
+    # --- SHOULDER BUTTONS ---
+    l1 = joystick.get_button(9)
+    r1 = joystick.get_button(10)
 
     # Triggers (L2/R2)
     l2 = joystick.get_axis(4)
@@ -43,7 +47,7 @@ while True:
     triangle = joystick.get_button(3)
 
     # Pack controller state into a string
-    inputs = f"{left_x:.2f},{left_y:.2f},{right_x:.2f},{right_y:.2f},{l2:.2f},{r2:.2f},{cross},{circle},{square},{triangle}"
+    inputs = f"{left_x:.2f},{left_y:.2f},{right_x:.2f},{right_y:.2f},{l1:.2f},{r1:.2f},{l2:.2f},{r2:.2f},{cross},{circle},{square},{triangle}"
 
     # Send it through serial
     ser.write((inputs + "\n").encode('utf-8'))
