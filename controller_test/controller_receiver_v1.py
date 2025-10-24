@@ -7,11 +7,11 @@ PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup(37, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(35, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(33, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(31, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(29, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(26, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(19, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(6, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(5, GPIO.OUT, initial=GPIO.LOW)
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 print(f"Listening on {PORT} at {BAUD} baud for controller data...\n")
