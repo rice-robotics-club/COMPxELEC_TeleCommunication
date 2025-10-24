@@ -4,7 +4,7 @@ import threading
 import time
 
 # --- SERIAL SETUP ---
-PORT = 'COM3'  # Replace with your RFD900 COM port (e.g. COM4 or /dev/ttyUSB0)
+PORT = 'COM4'  # Replace with your RFD900 COM port (e.g. COM4 or /dev/ttyUSB0)
 BAUD = 57600
 ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)

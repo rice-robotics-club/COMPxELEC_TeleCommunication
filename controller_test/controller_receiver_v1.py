@@ -1,7 +1,12 @@
 import serial
+import time
+import Jetson.GPIO as GPIO
+
 
 PORT = '/dev/tinyUSB0'
 BAUD = 57600
+
+GPIO.setmode(GPIO.BOARD)
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 print(f"Listening on {PORT} at {BAUD} baud for controller data...\n")
@@ -46,4 +51,24 @@ while True:
         f"R-stick({right_x:.2f},{right_y:.2f}) | "
         f"L1:{l1} R1:{r1} L2:{l2:.2f} R2:{r2:.2f} | "
         f"X:{cross} O:{circle} □:{square} △:{triangle}"
-    )
+        )
+
+        if square == 1:
+            GPIO.output(26, GPIO.HIGH)
+        else:
+            GPIO.output(26, GPIO.LOW)
+
+        if triangle == 1:
+            GPIO.output(19, GPIO.HIGH)
+        else:
+            GPIO.output(19, GPIO.LOW)
+
+        if circle == 1:
+            GPIO.output(13, GPIO.HIGH)
+        else:
+            GPIO.output(13, GPIO.LOW)
+
+        if cross == 1:
+            GPIO.output(6, GPIO.HIGH)
+        else:
+            GPIO.output(6, GPIO.LOW)
