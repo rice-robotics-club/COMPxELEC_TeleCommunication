@@ -30,14 +30,14 @@ while True:
         left_y = float(left_y)
         right_x = float(right_x)
         right_y = float(right_y)
-        l1 = int(l1)
-        r1 = int(r1)
+        l1 = float(l1)
+        r1 = float(r1)
         l2 = float(l2)
         r2 = float(r2)
-        cross = int(cross)
-        circle = int(circle)
-        square = int(square)
-        triangle = int(triangle)
+        cross = float(cross)
+        circle = float(circle)
+        square = float(square)
+        triangle = float(triangle)
         
         # Example robot control logic:
         #if cross:  # Cross button pressed
