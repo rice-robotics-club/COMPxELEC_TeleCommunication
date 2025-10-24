@@ -6,6 +6,9 @@ import Jetson.GPIO as GPIO
 PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
+ARDUINO_PORT = '/dev/ttyACM0'
+ARDUINO_BAUD = 9600  # or match whatever your Arduino code uses
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(19, GPIO.OUT, initial=GPIO.LOW)
@@ -15,6 +18,9 @@ GPIO.setup(5, GPIO.OUT, initial=GPIO.LOW)
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 print(f"Listening on {PORT} at {BAUD} baud for controller data...\n")
+
+arduino = serial.Serial(ARDUINO_PORT, ARDUINO_BAUD, timeout=1)
+print(f"Connected to Arduino on {ARDUINO_PORT}")
 
 while True:
     if ser.in_waiting > 0: # Checks that something actually arrived before trying to read it.
@@ -58,28 +64,17 @@ while True:
         f"X:{cross} O:{circle} □:{square} △:{triangle}"
         )
 
-        if square == 1:
-            GPIO.output(26, GPIO.HIGH)
-            print("Allen")
+        if square:
+            number_to_send = 1
+        elif triangle:
+            number_to_send = 2
+        elif circle:
+            number_to_send = 3
+        elif cross:
+            number_to_send = 4
         else:
-            GPIO.output(26, GPIO.LOW)
+            number_to_send = 0
 
-        if triangle == 1:
-            GPIO.output(19, GPIO.HIGH)
-        else:
-            GPIO.output(19, GPIO.LOW)
-
-        if circle == 1:
-            GPIO.output(13, GPIO.HIGH)
-        else:
-            GPIO.output(13, GPIO.LOW)
-
-        if cross == 1:
-            GPIO.output(6, GPIO.HIGH)
-        else:
-            GPIO.output(6, GPIO.LOW)
-
-        if l1 == 1:
-            GPIO.output(5, GPIO.HIGH)
-        else:
-            GPIO.output(5, GPIO.LOW)
+        # Send the number to Arduino
+        arduino.write(f"{number_to_send}\n".encode('utf-8'))
+        print(f"→ Sent {number_to_send} to Arduino")
