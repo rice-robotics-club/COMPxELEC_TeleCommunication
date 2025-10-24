@@ -53,7 +53,14 @@ while True:
     ser.write((inputs + "\n").encode('utf-8'))
 
     # Print locally too
-    print("Sent:", inputs)
+   
+    print(
+        f"Received: "
+        f"L-stick({left_x:.2f},{left_y:.2f}) | "
+        f"R-stick({right_x:.2f},{right_y:.2f}) | "
+        f"L1:{l1} R1:{r1} L2:{l2:.2f} R2:{r2:.2f} | "
+        f"X:{cross} O:{circle} □:{square} △:{triangle}"
+        )
 
     # Small delay to avoid spamming
     time.sleep(0.1) # This value can be changed 
