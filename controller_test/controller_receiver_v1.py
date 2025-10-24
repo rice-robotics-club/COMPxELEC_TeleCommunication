@@ -7,7 +7,7 @@ PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
 ARDUINO_PORT = '/dev/ttyACM0'
-ARDUINO_BAUD = 9600  # or match whatever your Arduino code uses
+ARDUINO_BAUD = 57600  # or match whatever your Arduino code uses
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.OUT, initial=GPIO.LOW)
