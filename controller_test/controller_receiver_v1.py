@@ -60,6 +60,7 @@ while True:
 
         if square == 1:
             GPIO.output(26, GPIO.HIGH)
+            print("Allen")
         else:
             GPIO.output(26, GPIO.LOW)
 
