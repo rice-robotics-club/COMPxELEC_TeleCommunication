@@ -3,7 +3,7 @@ import time
 import Jetson.GPIO as GPIO
 
 
-PORT = '/dev/tinyUSB0'
+PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
 GPIO.setmode(GPIO.BOARD)
