@@ -6,7 +6,7 @@ import Jetson.GPIO as GPIO
 PORT = '/dev/ttyUSB0'
 BAUD = 57600
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(26, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(19, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)
