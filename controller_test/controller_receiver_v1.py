@@ -72,3 +72,8 @@ while True:
             GPIO.output(6, GPIO.HIGH)
         else:
             GPIO.output(6, GPIO.LOW)
+
+        if l1 == 1:
+            GPIO.output(5, GPIO.HIGH)
+        else:
+            GPIO.output(5, GPIO.LOW)
