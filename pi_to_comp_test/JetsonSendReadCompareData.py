@@ -1,8 +1,15 @@
-import serial
-print("serial is from:", serial.__file__)
-import threading
 
-PORT = 'COM7'   # Use UART pins (GPIO14 TX, GPIO15 RX)
+import serial
+import threading
+import queue
+
+
+#write values here whenever they are sent so that they can be compared to recieved values
+sent_queue = queue.Queue
+#put values here when they are recieved for future comparison
+recieved_queue = queue.Queue
+
+PORT = '/dev/serial0'   # Use UART pins (GPIO14 TX, GPIO15 RX)
 BAUD = 57600
 
 def read_from_pc(ser):
